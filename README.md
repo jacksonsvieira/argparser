@@ -1,2 +1,2 @@
 # argparser
-Simple Command line arguments parser to c++
+Simple command line arguments parser to c++
