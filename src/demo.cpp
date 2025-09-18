@@ -1,8 +1,8 @@
-#include "./argparser.cpp"
 #include <cstdlib>
 #include <iostream>
+#include "./argparser.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   bool show_help = false;
   int password_length = 7;
 
