@@ -3,7 +3,6 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-  ap::argoption options[1] = {ap::argoption{}};
   bool show_help = false;
   int password_length = 7;
 
