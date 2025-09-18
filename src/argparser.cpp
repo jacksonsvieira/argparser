@@ -53,12 +53,13 @@ public:
 
     while (left < rigth) {
       auto arg = argv[left];
-
-      // bool is_long_arg = start_with(arg, "--");
-      // bool is_short_arg = start_with(arg, "-");
-
       argoption *opt = nullptr;
       opt = find_option_by_name(arg);
+
+      // TODO: Handle multiples shortargs like -hpxa
+      // TODO: Handle repeated args should ignore and exec the action only one
+      // time (Maybe create a function exact for clean the input before? for
+      // example and return a cleaned arg list with all passing options)
 
       if (opt != nullptr) {
         switch (opt->type) {
@@ -69,7 +70,12 @@ public:
           // handle bool or string value
           // for example for string interger value the next arg should be the
           // should validate if exists
-          // TODO: Remover esse if else
+          // TODO: Refact to remove this if else
+
+          // TODO: Should validate if next arg is valid value, use some way to
+          // validate if is a valid interger, because stoi maybe trucate the
+          // value to a interger passing a decimal value like 10.5
+
           if (left + 1 >= argc) {
             // TODO: Implement result pattern like Go (ok, err);
             // throw error for example argument invalid
