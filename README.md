@@ -29,6 +29,15 @@ int main(int argc, char* argv[]) {
 ```
 ```
 
+## References
+- [Python argparser](https://docs.python.org/3/library/argparse.html) Where the curiosity came from
+- [Eza](https://github.com/eza-community/eza.git) Used as inspiration in error message output when invalid args are pass
+
+
+## Contributing
+
+Contribuitions and new ideas are welcome!
+
 ## TODO
 - [ ] Add cli argument handler
 - [ ] Refact struct the code better with classes and split code definitions and implementations
@@ -36,7 +45,7 @@ int main(int argc, char* argv[]) {
 > Talvez implementar uma fila para guardar a ordem de cada argumento)
   -  RULE: Args that need a specific value should separeted never combined (Limition for simplify)
 - [ ] Add tests
-- [ ] Add error handler ArgParser.has_error and should store errors of the current cycle (ok = parser(argc, argv) -> if(!ok) argParser.showErrors())
+- [x] Add error handler ArgParser.has_error and should store errors of the current cycle (ok = parser(argc, argv) -> if(!ok) argParser.showErrors())
 - [ ] Add validation callback for validate a input value like length of password, should be > 0
 - [x] Add help usage
 - [x] Add option description or help text
@@ -44,4 +53,7 @@ int main(int argc, char* argv[]) {
 - [ ] Add Documentation
 - [x] Handle bool values
 - [x] Handle integer values
+- [ ] Handle optional arguments
+- [ ] Handle required arguments
+- [ ] Builder argument aproach
 ```
