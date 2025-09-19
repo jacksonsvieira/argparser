@@ -5,7 +5,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <unordered_map>
 
 #include "argparser.h"
 
@@ -32,9 +31,8 @@ ap::argoption* ap::ArgParser::find_option_by_name(std::string name) {
   return nullptr;
 }
 
-std::vector<std::string> ap::ArgParser::clear_arguments(int argc, char* argv[]) {
+std::vector<std::string> ap::ArgParser::validate_arguments(int argc, char* argv[]) {
   std::vector<std::string> cleaned_args;
-  std::unordered_map<std::string, bool> args_filled;
 
   // TODO: maybe this function should validate for example if a arg option
   // exists for a given arg, maybe validate repetions based on the values,
@@ -49,10 +47,6 @@ std::vector<std::string> ap::ArgParser::clear_arguments(int argc, char* argv[]) 
     bool is_short_arg = start_with(arg, "-");
     bool is_long_arg = start_with(arg, "--");
 
-    // bool already_readed = args_filled.count(arg);
-    // if (already_readed)
-    //   continue;
-
     if (is_short_arg) {
       int arg_length = strlen(arg);
       for (int k = 1; k < arg_length; k++) {
@@ -60,11 +54,10 @@ std::vector<std::string> ap::ArgParser::clear_arguments(int argc, char* argv[]) 
       }
     } else if (is_long_arg) {
       cleaned_args.push_back(arg);
+      // if is a value do nothing only push back
     } else {
       cleaned_args.push_back(arg);
     }
-
-    args_filled[arg] = true;
   }
 
   return cleaned_args;
@@ -81,7 +74,7 @@ void ap::ArgParser::add_arguments(std::string short_name,
 int ap::ArgParser::get_options_size() { return options.size(); }
 
 void ap::ArgParser::parser(int argc, char* argv[]) {
-  auto validaded_args = clear_arguments(argc, argv);
+  auto validaded_args = validate_arguments(argc, argv);
 
   int left = 0;
   int rigth = validaded_args.size();
@@ -123,17 +116,12 @@ void ap::ArgParser::parser(int argc, char* argv[]) {
         }
 
         break;
-      case STRING:
-        break;
       }
     }
 
     left++;
   }
 }
-
-int COL_OPTION_INFO_WIDTH = 40;
-int COL_OPTION_DESCRIPTION_MAX_WIDTH = 80;
 
 std::vector<std::string> wrap_text(std::string text, int width) {
   std::istringstream stream(text);

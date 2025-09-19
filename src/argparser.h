@@ -3,7 +3,7 @@
 
 namespace ap {
 
-enum ArgOptionType { BOOL, STRING, INT };
+enum ArgOptionType { BOOL, INT };
 
 struct argoption {
   std::string short_name;
@@ -23,7 +23,7 @@ private:
 
   bool start_with(std::string value, std::string symbol);
   argoption* find_option_by_name(std::string name);
-  std::vector<std::string> clear_arguments(int argc, char* argv[]);
+  std::vector<std::string> validate_arguments(int argc, char* argv[]);
 
 public:
   ArgParser(std::string project_name,
