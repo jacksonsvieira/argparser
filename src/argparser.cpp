@@ -2,6 +2,7 @@
 #include <format>
 #include <iomanip>
 #include <iostream>
+#include <ostream>
 #include <pthread.h>
 #include <sstream>
 #include <string>
@@ -73,13 +74,41 @@ void ap::ArgParser::add_arguments(std::string short_name,
   options.push_back(ap::argoption{ short_name, long_name, description, value, type });
 }
 
-bool ap::ArgParser::has_error() { return get_errors().size() > 0; }
+bool ap::ArgParser::has_error() { return errors.size() > 0; }
 
-void ap::ArgParser::add_error(std::string description, ap::argoption* option, std::string value) {
-  errors.push_back(argerror{ description, option, value });
+void ap::ArgParser::add_error(std::string description,
+                              ap::argoption* option,
+                              std::string value,
+                              int code) {
+  errors.push_back(argerror{ description, option, value, code });
 }
 
-std::vector<ap::argerror> ap::ArgParser::get_errors() { return errors; }
+std::string ap::ArgParser::show_errors() {
+  // 0 - types of error not found argument
+  // 1 - invalid argumnent option
+  // 2 - missing value argument option
+  std::ostringstream oss;
+
+  for (auto& error : errors) {
+    std::ostringstream error_message;
+    switch (error.code) {
+    case 4:
+      error_message << "Unknown argument " << error.input;
+      break;
+    case 1:
+      error_message << "Value " << std::format("\"{}\"", error.input) << " not valid for option "
+                    << error.option->short_name << ": " << error.description;
+      break;
+    case 2:
+      error_message << "Flag " << error.option->short_name << " needs a value";
+      break;
+    }
+
+    oss << "argparser: " << error_message.str() << "\n";
+  }
+
+  return oss.str();
+}
 
 int ap::ArgParser::get_options_size() { return options.size(); }
 
@@ -103,15 +132,15 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
         // TODO: Refact to remove this if else
 
         if (left + 1 >= argc) {
-          // Valor obrigatório (tipo => Falta de valor)
-          add_error("Necessário informar um valor", opt, "");
+          // Valor obrigatório (tipo => Falta de valor) 2
+          add_error("", opt, "", 2);
           return false;
         } else {
           auto arg_val = validaded_args[left + 1];
 
           if (!is_numeric_all_of(arg_val)) {
-            // Valor inválido (tipo => valor inválido)
-            add_error("Informe um valor válido", opt, arg_val);
+            // Valor inválido (tipo => valor inválido) 1
+            add_error("Invalid digit found in string", opt, arg_val, 1);
             return false;
           }
 
@@ -122,6 +151,9 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
 
         break;
       }
+    } else {
+      add_error("", nullptr, arg, 4);
+      return false;
     }
 
     left++;

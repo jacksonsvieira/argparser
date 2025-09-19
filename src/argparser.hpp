@@ -18,6 +18,7 @@ struct argerror {
   std::string description;
   argoption* option;
   std::string input;
+  int code;
 };
 
 class ArgParser {
@@ -54,9 +55,9 @@ public:
 
   bool has_error();
 
-  void add_error(std::string description, argoption* option, std::string value);
+  void add_error(std::string description, argoption* option, std::string value, int code);
 
-  std::vector<argerror> get_errors();
+  std::string show_errors();
 
   std::string usage();
 };
