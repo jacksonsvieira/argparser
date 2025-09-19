@@ -1,31 +1,26 @@
 # argparser
-Simple command line arguments parser to c++
-
-## Instalattion
-
-Colocar um guia de como instalar a lib no projeto
+Simple CLI arguments parser C++
 
 ## Usage
 ```cpp
+#include <cstdlib>
+#include <iostream>
+#include "./argparser.h"
 
-int main(int argc, char[] argv){
-  ap::argoption options[1] = {ap::argoption{}};
+int main(int argc, char* argv[]) {
   bool show_help = false;
   int password_length = 7;
 
-  // options[0].long_name = "--help";
-  // options[0].short_name = "-h";
-  // options[0].value = &show_help;
-  // options[0].type = ap::BOOL;
+  ap::ArgParser argParser("passgen", "simple cli password generator", "0.0.1");
+  argParser.add_arguments("-h", "--help", "show help", &show_help, ap::BOOL);
+  argParser.add_arguments("-l", "--len", "set password size", &password_length, ap::INT);
+  argParser.parser(argc, argv);
 
-  options[0].long_name = "--length";
-  options[0].short_name = "-l";
-  options[0].value = &password_length;
-  options[0].type = ap::INT;
+  if (show_help) {
+    auto usage = argParser.usage();
+    std::cout << usage;
+  }
 
-  ap::argparser(argc, argv, options);
-  std::cout << (show_help ? "HELP!" : "Pro play!") << "\n";
-  std::cout << "Tamanho da senha: " << password_length << "\n";
   return EXIT_SUCCESS;
 }
 ```
@@ -41,9 +36,10 @@ int main(int argc, char[] argv){
 > Talvez implementar uma fila para guardar a ordem de cada argumento)
   -  RULE: Args that need a specific value should separeted never combined (Limition for simplify)
 - [ ] Add tests
-- [ ] Add exception handler
-- [ ] Add help usage
-- [ ] Add option description or help text
+- [ ] Add error handler ArgParser.has_error and should store errors of the current cycle (ok = parser(argc, argv) -> if(!ok) argParser.showErrors())
+- [ ] Add validation callback for validate a input value like length of password, should be > 0
+- [x] Add help usage
+- [x] Add option description or help text
 - [ ] Refactor to optimize the code and check memory lick, improve pointer access operations, etc...
 - [ ] Add Documentation
 - [x] Handle bool values
