@@ -79,7 +79,7 @@ bool ap::ArgParser::has_error() { return errors.size() > 0; }
 void ap::ArgParser::add_error(std::string description,
                               ap::argoption* option,
                               std::string value,
-                              int code) {
+                              ArgOptionTypeError code) {
   errors.push_back(argerror{ description, option, value, code });
 }
 
@@ -92,14 +92,14 @@ std::string ap::ArgParser::show_errors() {
   for (auto& error : errors) {
     std::ostringstream error_message;
     switch (error.code) {
-    case 4:
+    case NOT_FOUND_ARGUMENT:
       error_message << "Unknown argument " << error.input;
       break;
-    case 1:
+    case INVALID_ARGUMENT_OPTION:
       error_message << "Value " << std::format("\"{}\"", error.input) << " not valid for option "
                     << error.option->short_name << ": " << error.description;
       break;
-    case 2:
+    case MISSING_VALUE_ARGUMENT_OPTION:
       error_message << "Flag " << error.option->short_name << " needs a value";
       break;
     }
@@ -131,14 +131,14 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
         // TODO: Refact to remove this if else
 
         if (left + 1 >= validaded_args.size()) {
-          add_error("", opt, "", 2);
+          add_error("", opt, "", ap::MISSING_VALUE_ARGUMENT_OPTION);
           return false;
         } else {
           auto arg_val = validaded_args[left + 1];
 
           if (!is_numeric_all_of(arg_val)) {
             // Valor inválido (tipo => valor inválido) 1
-            add_error("Invalid digit found in string", opt, arg_val, 1);
+            add_error("Invalid digit found in string", opt, arg_val, ap::INVALID_ARGUMENT_OPTION);
             return false;
           }
 
@@ -149,7 +149,7 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
         break;
       }
     } else {
-      add_error("", nullptr, arg, 4);
+      add_error("", nullptr, arg, NOT_FOUND_ARGUMENT);
       return false;
     }
 

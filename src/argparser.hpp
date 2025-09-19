@@ -5,20 +5,28 @@ namespace ap {
 
 enum ArgOptionType { BOOL, INT };
 
+// 0 - types of error not found argument
+// 1 - invalid argumnent option
+// 2 - missing value argument option
+enum ArgOptionTypeError {
+  NOT_FOUND_ARGUMENT,
+  INVALID_ARGUMENT_OPTION,
+  MISSING_VALUE_ARGUMENT_OPTION
+};
+
 struct argoption {
   std::string short_name;
   std::string long_name;
   std::string description;
   void* value;
   ArgOptionType type;
-  // maybe add some example?
 };
 
 struct argerror {
   std::string description;
   argoption* option;
   std::string input;
-  int code;
+  ArgOptionTypeError code;
 };
 
 class ArgParser {
@@ -55,7 +63,10 @@ public:
 
   bool has_error();
 
-  void add_error(std::string description, argoption* option, std::string value, int code);
+  void add_error(std::string description,
+                 argoption* option,
+                 std::string value,
+                 ArgOptionTypeError code);
 
   std::string show_errors();
 
