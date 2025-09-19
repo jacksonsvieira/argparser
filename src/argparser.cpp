@@ -1,6 +1,8 @@
 #include <cstring>
 #include <format>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -22,7 +24,6 @@ bool ap::ArgParser::start_with(std::string value, std::string symbol) {
 
 ap::argoption* ap::ArgParser::find_option_by_name(std::string name) {
   for (auto& opt : options) {
-    std::cout << opt.long_name << "\n";
     if (opt.short_name == name || opt.long_name == name) {
       return &opt;
     }
@@ -71,9 +72,10 @@ std::vector<std::string> ap::ArgParser::clear_arguments(int argc, char* argv[]) 
 
 void ap::ArgParser::add_arguments(std::string short_name,
                                   std::string long_name,
+                                  std::string description,
                                   void* value,
                                   ArgOptionType type) {
-  options.push_back(ap::argoption{ short_name, long_name, value, type });
+  options.push_back(ap::argoption{ short_name, long_name, description, value, type });
 }
 
 int ap::ArgParser::get_options_size() { return options.size(); }
@@ -128,4 +130,88 @@ void ap::ArgParser::parser(int argc, char* argv[]) {
 
     left++;
   }
+}
+
+int COL_OPTION_INFO_WIDTH = 40;
+int COL_OPTION_DESCRIPTION_MAX_WIDTH = 80;
+
+std::vector<std::string> wrap_text(std::string text, int width) {
+  std::istringstream stream(text);
+  std::vector<std::string> wrapped;
+
+  std::string current;
+  std::string word;
+
+  while (stream >> word) {
+    if (current.empty()) {
+      current = word;
+    } else {
+      if (current.size() + word.size() + 1 > width) {
+        wrapped.push_back(current);
+        current = word;
+      } else {
+        current += " " + word;
+      }
+    }
+  }
+
+  // fallback
+  if (!current.empty())
+    wrapped.push_back(current);
+
+  return wrapped;
+}
+
+std::string ap::ArgParser::usage() {
+
+  const size_t total_width = 80;
+  const size_t left_col_width = 28;
+  const size_t desc_width
+    = (total_width > left_col_width + 2) ? (total_width - left_col_width - 2) : 40;
+
+  std::ostringstream oss;
+
+  oss << project_name << "  v" << project_version << "\n";
+  oss << project_brief_description << "\n\n";
+
+  oss << "Usage: " << project_name << " [<options>]\n\n";
+  oss << "Options:\n";
+
+  for (auto& opt : options) {
+    std::string left;
+    if (!opt.short_name.empty() && !opt.long_name.empty()) {
+      left = opt.short_name + ", " + opt.long_name;
+    } else if (!opt.long_name.empty()) {
+      left = opt.long_name;
+    } else {
+      left = opt.short_name;
+    }
+
+    // put left in the entire fow if is larger than left col width
+    if (left.size() >= left_col_width) {
+      oss << "  " << left << "\n";
+      auto wrapped = wrap_text(opt.description, desc_width);
+      for (const auto& line : wrapped) {
+        oss << std::setw((int)left_col_width + 2) << "" << line << "\n";
+      }
+    } else {
+      auto wrapped = wrap_text(opt.description, desc_width);
+
+      std::ostringstream leftoss;
+      leftoss << "  " << std::left << std::setw((int)left_col_width) << left;
+      std::string leftcol = leftoss.str();
+
+      if (!wrapped.empty()) {
+        oss << leftcol << "  " << wrapped[0] << "\n";
+        // subsequent wrapped lines: indent to description column
+        for (size_t i = 1; i < wrapped.size(); ++i) {
+          oss << std::setw(left_col_width + 2) << "" << wrapped[i] << "\n";
+        }
+      } else {
+        oss << leftcol << "\n";
+      }
+    }
+  }
+
+  return oss.str();
 }

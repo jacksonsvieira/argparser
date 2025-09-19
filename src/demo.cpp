@@ -6,13 +6,15 @@ int main(int argc, char* argv[]) {
   bool show_help = false;
   int password_length = 7;
 
-  ap::ArgParser argParser;
-  argParser.add_arguments("-h", "--help", &show_help, ap::BOOL);
-  argParser.add_arguments("-l", "--len", &password_length, ap::INT);
+  ap::ArgParser argParser("passgen", "simple cli password generator", "0.0.1");
+  argParser.add_arguments("-h", "--help", "show help", &show_help, ap::BOOL);
+  argParser.add_arguments("-l", "--len", "set password size", &password_length, ap::INT);
   argParser.parser(argc, argv);
 
-  std::cout << "Show help: " << (show_help ? "sim" : "não") << "\n";
-  std::cout << "Tamanho da senha: " << password_length << "\n";
+  if (show_help) {
+    auto usage = argParser.usage();
+    std::cout << usage;
+  }
 
   return EXIT_SUCCESS;
 }
