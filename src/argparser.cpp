@@ -37,30 +37,24 @@ ap::argoption* ap::ArgParser::find_option_by_name(std::string name) {
 std::vector<std::string> ap::ArgParser::validate_arguments(int argc, char* argv[]) {
   std::vector<std::string> cleaned_args;
 
-  // TODO: maybe this function should validate for example if a arg option
-  // exists for a given arg, maybe validate repetions based on the values,
-  // return result approach, for example if have some error create a list of
-  // error and create a msg error for each argument
-
-  // argerror (arg_name, error description)
-  // always have a pointer to the last option get
-
+  // TODO: Fix error that when negatives numbers passed as values are considered shorts arguments
+  // // or in the future when string option are allowed error for values that start with - but is a
+  // value
+  //
   for (int i = 1; i < argc; i++) {
     auto arg = argv[i];
     bool is_short_arg = start_with(arg, "-");
     bool is_long_arg = start_with(arg, "--");
 
-    if (is_short_arg) {
+    if (is_short_arg && !is_long_arg) {
       int arg_length = strlen(arg);
       for (int k = 1; k < arg_length; k++) {
         cleaned_args.push_back(std::format("-{}", arg[k]));
       }
-    } else if (is_long_arg) {
-      cleaned_args.push_back(arg);
-      // if is a value do nothing only push back
-    } else {
-      cleaned_args.push_back(arg);
+      continue;
     }
+
+    cleaned_args.push_back(arg);
   }
 
   return cleaned_args;
@@ -129,7 +123,6 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
         break;
       case INT:
         // TODO: Refact to remove this if else
-
         if (left + 1 >= validaded_args.size()) {
           add_error("", opt, "", ap::MISSING_VALUE_ARGUMENT_OPTION);
           return false;
@@ -137,7 +130,6 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
           auto arg_val = validaded_args[left + 1];
 
           if (!is_numeric_all_of(arg_val)) {
-            // Valor inválido (tipo => valor inválido) 1
             add_error("Invalid digit found in string", opt, arg_val, ap::INVALID_ARGUMENT_OPTION);
             return false;
           }
@@ -200,7 +192,7 @@ std::string ap::ArgParser::usage() {
 
       if (!wrapped.empty()) {
         oss << leftcol << "  " << wrapped[0] << "\n";
-        // subsequent wrapped lines: indent to description column
+        // subsequent wrapped lines indent to description column
         for (size_t i = 1; i < wrapped.size(); ++i) {
           oss << std::setw(left_col_width + 2) << "" << wrapped[i] << "\n";
         }
