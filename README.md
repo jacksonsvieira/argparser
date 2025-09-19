@@ -24,13 +24,17 @@ int main(int argc, char* argv[]) {
   return EXIT_SUCCESS;
 }
 ```
-```
-```
-```
+
+
+## Running
+
+```c++
+clang++ -std=c++20 src/argparser.cpp src/demo.cpp
 ```
 
 ## References
 - [Python argparser](https://docs.python.org/3/library/argparse.html) Where the curiosity came from
+- [Argparser C lib](https://github.com/cofyc/argparse/blob/master/tests/basic.c#L25) Usefull insigths and idea of generic pointers
 - [Eza](https://github.com/eza-community/eza.git) Used as inspiration in error message output when invalid args are pass
 
 
@@ -39,9 +43,9 @@ int main(int argc, char* argv[]) {
 Contribuitions and new ideas are welcome!
 
 ## TODO
-- [ ] Add cli argument handler
-- [ ] Refact struct the code better with classes and split code definitions and implementations
-- [ ] Handle multiples short options like -fabs (if valid should combine each) (> [!NOTE]
+- [x] Add cli argument handler
+- [x] Refact struct the code better with classes and split code definitions and implementations
+- [x] Handle multiples short options like -fabs (if valid should combine each) (> [!NOTE]
 > Talvez implementar uma fila para guardar a ordem de cada argumento)
   -  RULE: Args that need a specific value should separeted never combined (Limition for simplify)
 - [ ] Add tests
@@ -55,5 +59,7 @@ Contribuitions and new ideas are welcome!
 - [x] Handle integer values
 - [ ] Handle optional arguments
 - [ ] Handle required arguments
-- [ ] Builder argument aproach
-```
+
+## Errors
+- [ ] Handle negative numbers in the input for integer values (-10)
+- [ ] Handle value integer value not passed for example only pass -l 
