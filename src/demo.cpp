@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <iostream>
-#include "./argparser.h"
+#include "./argparser.hpp"
 
 int main(int argc, char* argv[]) {
   bool show_help = false;

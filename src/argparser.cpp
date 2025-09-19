@@ -6,7 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "argparser.h"
+#include "argparser.hpp"
+#include "utils.hpp"
 
 bool ap::ArgParser::start_with(std::string value, std::string symbol) {
   if (value.size() < symbol.size())
@@ -84,11 +85,6 @@ void ap::ArgParser::parser(int argc, char* argv[]) {
     argoption* opt = nullptr;
     opt = find_option_by_name(arg);
 
-    // TODO: Handle repeated args should ignore and exec the action only one
-    // time (Maybe create a function exact for clean the input before? for
-    // example and return a cleaned arg list with all passing options)
-    // TODO: Handle multiples shortargs like -hpxa
-
     if (opt != nullptr) {
       switch (opt->type) {
       case BOOL:
@@ -110,8 +106,16 @@ void ap::ArgParser::parser(int argc, char* argv[]) {
           std::cout << "é preciso dizer um valor essa flag." << "\n";
         } else {
           // handle possible exceptions like (10a...) try_catch
-          auto arg_val = std::stoi(validaded_args[left + 1]);
-          *static_cast<int*>(opt->value) = arg_val;
+          auto arg_val = validaded_args[left + 1];
+
+          if (!is_numeric_all_of(arg_val)) {
+            std::cout << "Por favor informe um valor válido" << "\n";
+            break;
+          }
+
+          auto arg_val_parsed = std::stoi(arg_val);
+
+          *static_cast<int*>(opt->value) = arg_val_parsed;
           left++;
         }
 
