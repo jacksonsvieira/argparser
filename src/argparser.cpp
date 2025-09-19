@@ -130,33 +130,6 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
   return true;
 }
 
-std::vector<std::string> wrap_text(std::string text, int width) {
-  std::istringstream stream(text);
-  std::vector<std::string> wrapped;
-
-  std::string current;
-  std::string word;
-
-  while (stream >> word) {
-    if (current.empty()) {
-      current = word;
-    } else {
-      if (current.size() + word.size() + 1 > width) {
-        wrapped.push_back(current);
-        current = word;
-      } else {
-        current += " " + word;
-      }
-    }
-  }
-
-  // fallback
-  if (!current.empty())
-    wrapped.push_back(current);
-
-  return wrapped;
-}
-
 std::string ap::ArgParser::usage() {
 
   const size_t total_width = 80;

@@ -12,7 +12,7 @@ int main(int argc, char* argv[]) {
   bool ok = argParser.parser(argc, argv);
 
   if (!ok) {
-    // TODO: Create a method "show_errors"
+    // TODO: Create a method "show_errors_beatiful"
     for (auto& error : argParser.get_errors()) {
       std::cout << error.description << "\n";
     }
