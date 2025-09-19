@@ -9,7 +9,16 @@ int main(int argc, char* argv[]) {
   ap::ArgParser argParser("passgen", "simple cli password generator", "0.0.1");
   argParser.add_arguments("-h", "--help", "show help", &show_help, ap::BOOL);
   argParser.add_arguments("-l", "--len", "set password size", &password_length, ap::INT);
-  argParser.parser(argc, argv);
+  bool ok = argParser.parser(argc, argv);
+
+  if (!ok) {
+    // TODO: Create a method "show_errors"
+    for (auto& error : argParser.get_errors()) {
+      std::cout << error.description << "\n";
+    }
+
+    return EXIT_FAILURE;
+  }
 
   if (show_help) {
     auto usage = argParser.usage();

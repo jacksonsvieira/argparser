@@ -2,6 +2,7 @@
 #include <format>
 #include <iomanip>
 #include <iostream>
+#include <pthread.h>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -72,9 +73,17 @@ void ap::ArgParser::add_arguments(std::string short_name,
   options.push_back(ap::argoption{ short_name, long_name, description, value, type });
 }
 
+bool ap::ArgParser::has_error() { return get_errors().size() > 0; }
+
+void ap::ArgParser::add_error(std::string description, ap::argoption* option, std::string value) {
+  errors.push_back(argerror{ description, option, value });
+}
+
+std::vector<ap::argerror> ap::ArgParser::get_errors() { return errors; }
+
 int ap::ArgParser::get_options_size() { return options.size(); }
 
-void ap::ArgParser::parser(int argc, char* argv[]) {
+bool ap::ArgParser::parser(int argc, char* argv[]) {
   auto validaded_args = validate_arguments(argc, argv);
 
   int left = 0;
@@ -91,30 +100,22 @@ void ap::ArgParser::parser(int argc, char* argv[]) {
         *static_cast<bool*>(opt->value) = true;
         break;
       case INT:
-        // handle bool or string value
-        // for example for string interger value the next arg should be the
-        // should validate if exists
         // TODO: Refact to remove this if else
 
-        // TODO: Should validate if next arg is valid value, use some way to
-        // validate if is a valid interger, because stoi maybe trucate the
-        // value to a interger passing a decimal value like 10.5
-
         if (left + 1 >= argc) {
-          // TODO: Implement result pattern like Go (ok, err);
-          // throw error for example argument invalid
-          std::cout << "é preciso dizer um valor essa flag." << "\n";
+          // Valor obrigatório (tipo => Falta de valor)
+          add_error("Necessário informar um valor", opt, "");
+          return false;
         } else {
-          // handle possible exceptions like (10a...) try_catch
           auto arg_val = validaded_args[left + 1];
 
           if (!is_numeric_all_of(arg_val)) {
-            std::cout << "Por favor informe um valor válido" << "\n";
-            break;
+            // Valor inválido (tipo => valor inválido)
+            add_error("Informe um valor válido", opt, arg_val);
+            return false;
           }
 
           auto arg_val_parsed = std::stoi(arg_val);
-
           *static_cast<int*>(opt->value) = arg_val_parsed;
           left++;
         }
@@ -125,6 +126,8 @@ void ap::ArgParser::parser(int argc, char* argv[]) {
 
     left++;
   }
+
+  return true;
 }
 
 std::vector<std::string> wrap_text(std::string text, int width) {

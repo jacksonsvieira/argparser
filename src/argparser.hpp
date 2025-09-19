@@ -11,11 +11,19 @@ struct argoption {
   std::string description;
   void* value;
   ArgOptionType type;
+  // maybe add some example?
+};
+
+struct argerror {
+  std::string description;
+  argoption* option;
+  std::string input;
 };
 
 class ArgParser {
 private:
   std::vector<argoption> options;
+  std::vector<argerror> errors;
 
   std::string project_name;
   std::string project_brief_description;
@@ -40,9 +48,15 @@ public:
                      void* value,
                      ArgOptionType type);
 
-  void parser(int argc, char* argv[]);
+  bool parser(int argc, char* argv[]);
 
   int get_options_size();
+
+  bool has_error();
+
+  void add_error(std::string description, argoption* option, std::string value);
+
+  std::vector<argerror> get_errors();
 
   std::string usage();
 };
