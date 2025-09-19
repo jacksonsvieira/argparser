@@ -114,7 +114,6 @@ int ap::ArgParser::get_options_size() { return options.size(); }
 
 bool ap::ArgParser::parser(int argc, char* argv[]) {
   auto validaded_args = validate_arguments(argc, argv);
-
   int left = 0;
   int rigth = validaded_args.size();
 
@@ -131,8 +130,7 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
       case INT:
         // TODO: Refact to remove this if else
 
-        if (left + 1 >= argc) {
-          // Valor obrigatório (tipo => Falta de valor) 2
+        if (left + 1 >= validaded_args.size()) {
           add_error("", opt, "", 2);
           return false;
         } else {
@@ -148,7 +146,6 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
           *static_cast<int*>(opt->value) = arg_val_parsed;
           left++;
         }
-
         break;
       }
     } else {
