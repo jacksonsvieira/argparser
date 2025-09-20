@@ -50,16 +50,11 @@ Contribuitions and new ideas are welcome!
   -  RULE: Args that need a specific value should separeted never combined (Limition for simplify)
 - [ ] Add tests
 - [x] Add error handler ArgParser.has_error and should store errors of the current cycle (ok = parser(argc, argv) -> if(!ok) argParser.showErrors())
-- [ ] Add validation callback for validate a input value like length of password, should be > 0
 - [x] Add help usage
 - [x] Add option description or help text
 - [ ] Refactor to optimize the code and check memory lick, improve pointer access operations, etc...
 - [ ] Add Documentation
+- [ ] Add validation callback for validate a input value like length of password, should be > 0
+- [ ] Import config from a file .ini
 - [x] Handle bool values
 - [x] Handle integer values
-- [ ] Handle optional arguments
-- [ ] Handle required arguments
-
-## Errors
-- [ ] Handle negative numbers in the input for integer values (-10)
-- [ ] Handle value integer value not passed for example only pass -l 
