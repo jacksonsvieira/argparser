@@ -36,8 +36,8 @@ ap::argoption* ap::ArgParser::find_option_by_name(std::string name) {
 
 std::vector<std::string> ap::ArgParser::validate_arguments(int argc, char* argv[]) {
   std::vector<std::string> cleaned_args;
+  bool last_readed_arg_needs_value = false;
 
-  bool last_readed_arg_needs_value;
   for (int i = 1; i < argc; i++) {
     auto arg = argv[i];
     bool is_short_arg = start_with(arg, "-");
@@ -45,6 +45,13 @@ std::vector<std::string> ap::ArgParser::validate_arguments(int argc, char* argv[
 
     if (is_short_arg && !is_long_arg && !last_readed_arg_needs_value) {
       int arg_length = strlen(arg);
+
+      // if args_legth == 1; is because the user pass only "-" you should append too in this case
+      // other option is return a error for example missing arg option
+      if (arg_length == 1) {
+        cleaned_args.push_back(arg);
+      }
+
       for (int k = 1; k < arg_length; k++) {
         auto* current_option = find_option_by_name(arg);
         cleaned_args.push_back(std::format("-{}", arg[k]));
@@ -120,8 +127,6 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
   auto validaded_args = validate_arguments(argc, argv);
   int left = 0;
   int rigth = validaded_args.size();
-
-  std::cout << validaded_args.size() << "\n";
 
   while (left < rigth) {
     auto arg = validaded_args[left];
