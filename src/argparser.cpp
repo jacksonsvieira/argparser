@@ -37,24 +37,34 @@ ap::argoption* ap::ArgParser::find_option_by_name(std::string name) {
 std::vector<std::string> ap::ArgParser::validate_arguments(int argc, char* argv[]) {
   std::vector<std::string> cleaned_args;
 
-  // TODO: Fix error that when negatives numbers passed as values are considered shorts arguments
-  // // or in the future when string option are allowed error for values that start with - but is a
-  // value
-  //
+  bool last_readed_arg_needs_value;
   for (int i = 1; i < argc; i++) {
     auto arg = argv[i];
     bool is_short_arg = start_with(arg, "-");
     bool is_long_arg = start_with(arg, "--");
 
-    if (is_short_arg && !is_long_arg) {
+    if (is_short_arg && !is_long_arg && !last_readed_arg_needs_value) {
       int arg_length = strlen(arg);
       for (int k = 1; k < arg_length; k++) {
+        auto* current_option = find_option_by_name(arg);
         cleaned_args.push_back(std::format("-{}", arg[k]));
+        if (current_option != nullptr) {
+          last_readed_arg_needs_value
+            = current_option->type == ap::INT;  // for now only int needs a value
+        } else {
+          last_readed_arg_needs_value = false;
+        }
       }
-      continue;
+    } else {
+      cleaned_args.push_back(arg);
+      auto* current_option = find_option_by_name(arg);
+      if (current_option != nullptr) {
+        last_readed_arg_needs_value
+          = current_option->type == ap::INT;  // for now only int needs a value
+      } else {
+        last_readed_arg_needs_value = false;
+      }
     }
-
-    cleaned_args.push_back(arg);
   }
 
   return cleaned_args;
@@ -111,6 +121,8 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
   int left = 0;
   int rigth = validaded_args.size();
 
+  std::cout << validaded_args.size() << "\n";
+
   while (left < rigth) {
     auto arg = validaded_args[left];
     argoption* opt = nullptr;
@@ -129,7 +141,7 @@ bool ap::ArgParser::parser(int argc, char* argv[]) {
         } else {
           auto arg_val = validaded_args[left + 1];
 
-          if (!is_numeric_all_of(arg_val)) {
+          if (!is_valid_interger(arg_val)) {
             add_error("Invalid digit found in string", opt, arg_val, ap::INVALID_ARGUMENT_OPTION);
             return false;
           }

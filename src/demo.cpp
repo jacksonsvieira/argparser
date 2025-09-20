@@ -22,5 +22,9 @@ int main(int argc, char* argv[]) {
     std::cout << usage;
   }
 
+  if (password_length != 7) {
+    std::cout << "Novo tamanho da senha: " << password_length << "\n";
+  }
+
   return EXIT_SUCCESS;
 }

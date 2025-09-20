@@ -1,15 +1,31 @@
-#include <algorithm>
 #include <cctype>
 #include <sstream>
 #include <string>
 #include <vector>
 
-inline bool is_numeric_all_of(const std::string& str) {
+inline bool is_valid_interger(const std::string& str) {
+  int i = 0;
+
   if (str.empty()) {
     return false;
   }
 
-  return std::all_of(str.begin(), str.end(), ::isdigit);  // Use ::isdigit for global scope
+  if (str[i] == '+' || str[i] == '-') {
+    i = 1;
+  }
+
+  // left = 1 and size = 1 is invalid because contains only the sign
+  if (i == str.size()) {
+    return false;
+  }
+
+  for (; i < str.size(); i++) {
+    if (!isdigit(str[i])) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 inline std::vector<std::string> wrap_text(std::string text, int width) {
