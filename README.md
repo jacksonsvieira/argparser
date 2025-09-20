@@ -48,13 +48,14 @@ Contribuitions and new ideas are welcome!
 - [x] Handle multiples short options like -fabs (if valid should combine each) (> [!NOTE]
 > Talvez implementar uma fila para guardar a ordem de cada argumento)
   -  RULE: Args that need a specific value should separeted never combined (Limition for simplify)
-- [ ] Add tests
 - [x] Add error handler ArgParser.has_error and should store errors of the current cycle (ok = parser(argc, argv) -> if(!ok) argParser.showErrors())
 - [x] Add help usage
 - [x] Add option description or help text
-- [ ] Refactor to optimize the code and check memory lick, improve pointer access operations, etc...
-- [ ] Add Documentation
-- [ ] Add validation callback for validate a input value like length of password, should be > 0
-- [ ] Import config from a file .ini
 - [x] Handle bool values
 - [x] Handle integer values
+- [ ] Add tests
+- [ ] Add Documentation
+
+## Ideas
+- [ ] Add validation callback for validate a input value like length of password, should be > 0
+- [ ] Import config from a file .ini
